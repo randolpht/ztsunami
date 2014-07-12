@@ -1,0 +1,3 @@
+20140712 FIRMWARE v0.1 Initial commit
+
+A good listener, but a dumb talker: can convert z-wave packet to serial, but inject only dummy z-wave packets. Improvements soon.
