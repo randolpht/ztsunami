@@ -2,6 +2,8 @@ What you need:
 
 TEXAS INSTRUMENTS - CC1110DK-MINI-868 - CC1110, WIRELESS, MINI DEV KIT
 
+<img src="http://ztsunami.googlecode.com/svn/wiki/images/CC1110DK-MINI_Devkit.jpg" alt="mDk"/>
+
 Costs around £55, but you could split it in 2 and sell the second part
 
 
