@@ -7,11 +7,17 @@ TEXAS INSTRUMENTS - CC1110DK-MINI-868 - CC1110, WIRELESS, MINI DEV KIT
 Costs around £55 including debugger (£30 on its own), but you could well split it in 2 and sell the second part
 
 
+
+
+
 DO NOT GET THE FOLLOWING:
 
 TEXAS INSTRUMENTS - CC1110EMK868-915 - CC1110 RF TRANSCEIVER, EVAL MODULE
 
 It might work, but it will be very difficult.
+
+It's also more expensive, and doesn't come with the flasher/debugger
+
 I know, I made this mistake at first, and had to return it.
 
 
