@@ -15,7 +15,7 @@ I know, I made this mistake at first, and had to return it.
 
 --------------------------------
 
-Flash the firmware (.hex) to the chip using the provided flasher tool
+Flash the firmware (Source Tab, Browse, Trunk/ztsunamiFW/zTsunami.hex) to the chip using the provided USB flasher tool and "TI SmartRF Flash Programmer Software"
 
 --------------------------------
 
