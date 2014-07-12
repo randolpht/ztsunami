@@ -28,7 +28,7 @@ Blue is   Devkit Rx, PC tx
 Yellow is DevKit Tx, PC Rx
 
 
-Attach the wires to a serial port, or scope them with a logic analyser, like the Saleae (https://www.saleae.com/) tool.
+Attach the wires to a serial port, or scope them with a logic analyser, like the Saleae ( https://www.saleae.com/ ) tool.
 
 Launch a serial terminal (Tera Term ( http://ttssh2.sourceforge.jp/index.html.en ) for example)
 
