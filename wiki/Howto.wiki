@@ -23,7 +23,7 @@ Solder 3 wires as such:
 
 Black is Ground
 
-Blue is   Devkit Rx, PC tx
+Blue is   Devkit Rx, PC Tx
 
 Yellow is DevKit Tx, PC Rx
 
