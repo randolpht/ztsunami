@@ -35,6 +35,9 @@ Launch a serial terminal (Tera Term ( http://ttssh2.sourceforge.jp/index.html.en
 Select correct port, Set bitrate to 115200
 
 
+<img src="http://ztsunami.googlecode.com/svn/wiki/images/SerialPortConfig.png" alt="SPC"/>
+
+
 ----------------------------------
 
 As of v0.1 the firmware is being developed using Keil C51 v9.5.2
