@@ -1,0 +1,147 @@
+C51 COMPILER V9.52.0.0   UART                                                              07/11/2014 18:49:06 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN UART.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE UART.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include  "CC1110.h"            /* Provided by Keil */
+   2          #include  "CC1110Supplement.h"
+   3          #include "UART.h"
+   4          
+   5          
+   6          /* Commonly used Baud Rate Settings for 26 MHz System Clock */
+   7          #define BAUD_M_26MHZ_2400    131
+   8          #define BAUD_E_26MHZ_2400      6
+   9          #define BAUD_M_26MHZ_9600    131
+  10          #define BAUD_E_26MHZ_9600      8
+  11          #define BAUD_M_26MHZ_57600    34
+  12          #define BAUD_E_26MHZ_57600    11
+  13          #define BAUD_M_26MHZ_115200   34
+  14          #define BAUD_E_26MHZ_115200   12
+  15          #define BAUD_M_26MHZ_230400   34
+  16          #define BAUD_E_26MHZ_230400   13
+  17          
+  18          
+  19          static unsigned char idata UARTTxBytes[UART_TX_BYTES_MAX];
+  20          static unsigned char idata UARTTxByteCount = 0;
+  21          
+  22          unsigned char idata UARTRxBytes[UART_RX_BYTES_MAX];
+  23          unsigned char idata UARTRxByteCount = 0;
+  24          
+  25          
+  26          
+  27          /*******************************************************************************
+  28          UART0Init
+  29          
+  30          Setup the UART0
+  31          UART Docs in swra222b.pdf
+  32          // TODO drive UART by interrupt (p20 21)
+  33           *******************************************************************************/
+  34          void UART0Init(unsigned char BaudRate)
+  35          {
+  36   1          U0CSR = MODE | RE;
+  37   1          switch(BaudRate)
+  38   1          {
+  39   2              case BAUD_2400:
+  40   2                  U0GCR = BAUD_E_26MHZ_2400;
+  41   2                  U0BAUD = BAUD_M_26MHZ_2400;
+  42   2                  break;
+  43   2              case BAUD_9600:
+  44   2                  U0GCR = BAUD_E_26MHZ_9600;
+  45   2                  U0BAUD = BAUD_M_26MHZ_9600;
+  46   2                  break;
+  47   2              case BAUD_57600:
+  48   2                  U0GCR = BAUD_E_26MHZ_57600;
+  49   2                  U0BAUD = BAUD_M_26MHZ_57600;
+  50   2                  break;
+  51   2              case BAUD_115200:
+  52   2                  U0GCR = BAUD_E_26MHZ_115200;
+  53   2                  U0BAUD = BAUD_M_26MHZ_115200;
+  54   2                  break;
+  55   2              case BAUD_230400:
+C51 COMPILER V9.52.0.0   UART                                                              07/11/2014 18:49:06 PAGE 2   
+
+  56   2                  U0GCR = BAUD_E_26MHZ_230400;
+  57   2                  U0BAUD = BAUD_M_26MHZ_230400;
+  58   2                  break;
+  59   2              default:
+  60   2                  break;
+  61   2          }
+  62   1      }
+  63          
+  64          
+  65          
+  66          /*******************************************************************************
+  67          UART0Tx
+  68          
+  69          Sends byte by byte an array of byte
+  70           *******************************************************************************/
+  71          void UART0Tx(void)
+  72          {
+  73   1          unsigned char UARTTxIndex;
+  74   1          UTX0IF = 0; /* Clear USART0 TX interrupt flag */
+  75   1          for(UARTTxIndex = 0; UARTTxIndex < UARTTxByteCount; UARTTxIndex++)
+  76   1          {
+  77   2              U0DBUF = UARTTxBytes[UARTTxIndex];
+  78   2              UARTTxBytes[UARTTxIndex] = 0; /* Erase Sent char */
+  79   2              while(!UTX0IF)
+  80   2              {
+  81   3              }
+  82   2              UTX0IF = 0; /* Clear USART0 TX interrupt flag */
+  83   2          }
+  84   1          UARTTxByteCount = 0; /* Reset counter */
+  85   1      }
+  86          
+  87          
+  88          
+  89          /*******************************************************************************
+  90          UART0Rx
+  91          
+  92          Receives bytes and store them in an array
+  93           *******************************************************************************/
+  94          void UART0Rx(void)
+  95          {
+  96   1          unsigned char UARTRxIndex;
+  97   1          URX0IF = 0; /* Clear USART0 RX interrupt flag */
+  98   1          for(UARTRxIndex = 0; UARTRxIndex < UARTRxByteCount; UARTRxIndex++)
+  99   1          {
+ 100   2              while(!URX0IF)
+ 101   2              {
+ 102   3              }
+ 103   2              UARTRxBytes[UARTRxIndex] = U0DBUF;
+ 104   2              URX0IF = 0; /* Clear USART0 RX interrupt flag */
+ 105   2          }
+ 106   1      }
+ 107          
+ 108          
+ 109          
+ 110          /*******************************************************************************
+ 111          UARTTxMessageBuild
+ 112          
+ 113           *******************************************************************************/
+ 114          void UARTTxMessageBuild(unsigned char CharIn)
+ 115          {
+ 116   1          UARTTxBytes[UARTTxByteCount] = CharIn;
+ 117   1          UARTTxByteCount++;
+C51 COMPILER V9.52.0.0   UART                                                              07/11/2014 18:49:06 PAGE 3   
+
+ 118   1      }
+ 119          
+ 120          //TODO message clear
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    125    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =     82    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,268 @@
+C51 COMPILER V9.52.0.0   ZTSUNAMI                                                          07/12/2014 11:48:33 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE ZTSUNAMI
+OBJECT MODULE PLACED IN zTsunami.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE zTsunami.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "CC1110.h"            /* Provided by Keil */
+   2          #include "CC1110Supplement.h"
+   3          #include "CC1110DKMini.h"
+   4          #include "Radio.h"
+   5          #include "UART.h"
+   6          #include "Util.h"
+   7          #include "Info.h"
+   8          #include "Types.h"
+   9          
+  10          //TODO Circular buffer for RadioIn, UART0out data
+  11          //TODO Watchdog
+  12          //TODO use IRQ or DMA
+  13          //TODO display RSSI
+  14          
+  15          
+  16          
+  17          /*******************************************************************************
+  18          main
+  19          
+  20          Software entry point
+  21          
+  22          Purpose of this software is to listen & inject Z-Wave packet
+  23          Is essential a bidirectional Serial to Z-Wave bridge
+  24          Can be used to either be part of a home automation system (my case),
+  25          or create havoc. USE RESPONSIBLY.
+  26          
+  27          Requires a CC1110DK
+  28          Compiled with Keil c51 v952
+  29          
+  30           *******************************************************************************/
+  31          void main(void)
+  32          {
+  33   1          unsigned char Idx = 0; /* General For Loop Counter */
+  34   1      
+  35   1          CLKCON = 0x00; /* Select the High speed crystal oscillator */
+  36   1          while((CLKCON & OSC) != 0)
+  37   1          {
+  38   2              /* Wait for change to take effect */
+  39   2          }
+  40   1      
+  41   1          /* Configure Pins */
+  42   1          P0SEL = (PX_5_PERIPHERAL | PX_4_PERIPHERAL | PX_3_PERIPHERAL | PX_2_PERIPHERAL); /* Schematics of the 
+             -mini devkit user guide p25 shows the serial port uses: P0_3 as Tx, P0_2 as Rx */
+  43   1          P1DIR = (PX_1_OUT | PX_0_OUT); /* Schematics of the mini devkit user guide p25 show Green LED uses P1_
+             -0 and the Red LED P1_1 */
+  44   1      
+  45   1          UART0Init(BAUD_115200); /* Configures UART0 */
+  46   1          InfoBanner();
+  47   1      
+  48   1          RadioInit(); /* Configure the TI chip Radio */
+  49   1      
+  50   1          /* UART RX Test */
+  51   1          //UARTRxByteCount = 5; //wait for 5 bytes
+  52   1          //UART0Rx();
+  53   1          //for(Idx = 0; Idx < UARTRxByteCount ; Idx++)
+C51 COMPILER V9.52.0.0   ZTSUNAMI                                                          07/12/2014 11:48:33 PAGE 2   
+
+  54   1          //{
+  55   1          //    UARTTxMessageBuild(UARTRxBytes[Idx] + 1); /* Print the next char for a laugth */
+  56   1          //}
+  57   1          //UART0Tx();
+  58   1      
+  59   1          /* Dummy Data to test Radio Tx */
+  60   1          RadioTxMessageBuild(0x01);
+  61   1          RadioTxMessageBuild(0x23);
+  62   1          RadioTxMessageBuild(0x45);
+  63   1          RadioTxMessageBuild(0x67);
+  64   1          RadioTxMessageBuild(0x89);
+  65   1          /*
+  66   1          RadioTxMessageBuild(0xAB);
+  67   1          RadioTxMessageBuild(0xCD);
+  68   1          RadioTxMessageBuild(0xEF);
+  69   1          RadioTxMessageBuild(0x01);
+  70   1          RadioTxMessageBuild(0x23);
+  71   1          RadioTxMessageBuild(0x45);
+  72   1          RadioTxMessageBuild(0x67);
+  73   1          RadioTxMessageBuild(0x89);
+  74   1          RadioTxMessageBuild(0xAB);
+  75   1          RadioTxMessageBuild(0xCD);
+  76   1          RadioTxMessageBuild(0xEF);
+  77   1          RadioTxMessageBuild(0x01);
+  78   1          RadioTxMessageBuild(0x23);
+  79   1          RadioTxMessageBuild(0x45);
+  80   1          RadioTxMessageBuild(0x67);
+  81   1          RadioTxMessageBuild(0x89);
+  82   1          */
+  83   1      
+  84   1          while(1) /* Forever Loop */
+  85   1          {
+  86   2              MARCSTATECurrent = MARCSTATE;
+  87   2      
+  88   2              /* LED Controls */
+  89   2              PinLEDGreen = (MARCSTATECurrent == RX) ? 1 : 0 ; /* When radio receives, Green LED should be lit *
+             -/
+  90   2              PinLEDRed =   (MARCSTATECurrent == TX) ? 1 : 0 ; /* When radio trasmits,   Red LED should be lit *
+             -/
+  91   2      
+  92   2              switch(MARCSTATECurrent)
+  93   2              {
+  94   3                  case IDLE:
+  95   3                      if(RadioRxBytesCount > 0)
+  96   3                      {
+  97   4                          /* Print the number of radio bytes received */
+  98   4                          UARTTxMessageBuild('R');
+  99   4                          UARTTxMessageBuild('x');
+ 100   4                          UARTTxMessageBuild('B');
+ 101   4                          UARTTxMessageBuild(' ');
+ 102   4                          UARTTxMessageBuild('=');
+ 103   4                          UARTTxMessageBuild(' ');
+ 104   4                          UART0Tx();
+ 105   4      
+ 106   4                          UtilU8ToHumanDec(RadioRxBytesCount);
+ 107   4      
+ 108   4                          UARTTxMessageBuild('\r');
+ 109   4                          UARTTxMessageBuild('\n');
+ 110   4                          UART0Tx();
+ 111   4      
+ 112   4                          /* Print the received radio bytes */
+ 113   4                          UARTTxMessageBuild('R');
+C51 COMPILER V9.52.0.0   ZTSUNAMI                                                          07/12/2014 11:48:33 PAGE 3   
+
+ 114   4                          UARTTxMessageBuild('x');
+ 115   4                          UARTTxMessageBuild('D');
+ 116   4                          UARTTxMessageBuild(' ');
+ 117   4                          UARTTxMessageBuild('=');
+ 118   4                          UARTTxMessageBuild(' ');
+ 119   4                          UART0Tx();
+ 120   4      
+ 121   4                          for(Idx = 0; Idx < RadioRxBytesCount; Idx++)
+ 122   4                          {
+ 123   5                              UtilU8ToHumanHex(RadioRxBytes[Idx]);
+ 124   5                          }
+ 125   4      
+ 126   4                          RadioRxBytesCount = 0; /* Reset Radio Data IN counter */
+ 127   4                          UARTTxMessageBuild('\r');
+ 128   4                          UARTTxMessageBuild('\n');
+ 129   4                          UART0Tx();
+ 130   4                      }
+ 131   3      
+ 132   3                      RadioTxBytesCountOut = 0; /* Reset Radio Data OUT counter */
+ 133   3      
+ 134   3                      /* Always go back to Rx Mode by Default, unless master switch is pushed */
+ 135   3                      if(PinSwitchMaster == 0)
+ 136   3                      {
+ 137   4                          PKTLEN = RadioTxBytesCountIn;
+ 138   4                          RFST = STX; /* Enter Radio TX state by issuing an SRX strobe command */
+ 139   4                      }
+ 140   3                      else
+ 141   3                      {
+ 142   4                          PKTLEN = 25;
+ 143   4                          RFST = SRX; /* Enter Radio RX state by issuing an SRX strobe command */
+ 144   4                      }
+ 145   3      
+ 146   3                      break;
+ 147   3      
+ 148   3                  case RX:
+ 149   3                      if(RFTXRXIF != 0)
+ 150   3                      {
+ 151   4                          RFTXRXIF = 0; /* Specs say to clear fag  BEFORE reading (p188) */
+ 152   4                          RadioRxBytes[RadioRxBytesCount] = ~RFD;
+ 153   4                          RadioRxBytesCount++;
+ 154   4                      }
+ 155   3                      break;
+ 156   3      
+ 157   3                  case RX_OVERFLOW:
+ 158   3                      RFST = SIDLE; /* Return to Idle state to continue */
+ 159   3                      break;
+ 160   3      
+ 161   3                  case TX:
+ 162   3                      /* Print Radio State Info */
+ 163   3                      UARTTxMessageBuild('S');
+ 164   3                      UARTTxMessageBuild('t');
+ 165   3                      UARTTxMessageBuild('M');
+ 166   3                      UARTTxMessageBuild(' ');
+ 167   3                      UARTTxMessageBuild('=');
+ 168   3                      UARTTxMessageBuild(' ');
+ 169   3                      UART0Tx();
+ 170   3      
+ 171   3                      UtilU8ToHumanHex(MARCSTATECurrent);
+ 172   3      
+ 173   3                      UARTTxMessageBuild('\r');
+ 174   3                      UARTTxMessageBuild('\n');
+ 175   3                      UART0Tx();
+C51 COMPILER V9.52.0.0   ZTSUNAMI                                                          07/12/2014 11:48:33 PAGE 4   
+
+ 176   3      
+ 177   3                      while(RadioTxBytesCountOut < RadioTxBytesCountIn)
+ 178   3                      {
+ 179   4                          if(RFTXRXIF != 0)
+ 180   4                          {
+ 181   5                              RFD = ~RadioTxBytes[RadioTxBytesCountOut];
+ 182   5                              RFTXRXIF = 0;
+ 183   5                              RadioTxBytesCountOut++;
+ 184   5                          }
+ 185   4                      }
+ 186   3                      //RadioTxBytesCountIn = 0; /* Reset the Radio TX Data IN index */
+ 187   3                      RFST = SIDLE; /* Return to Idle state to continue */
+ 188   3                      break;
+ 189   3      
+ 190   3                  case TX_UNDERFLOW:
+ 191   3                          UARTTxMessageBuild('S');
+ 192   3                          UARTTxMessageBuild('t');
+ 193   3                          UARTTxMessageBuild('M');
+ 194   3                          UARTTxMessageBuild(' ');
+ 195   3                          UARTTxMessageBuild('=');
+ 196   3                          UARTTxMessageBuild(' ');
+ 197   3                          UART0Tx();
+ 198   3      
+ 199   3                          UtilU8ToHumanHex(MARCSTATECurrent);
+ 200   3      
+ 201   3                          UARTTxMessageBuild('\r');
+ 202   3                          UARTTxMessageBuild('\n');
+ 203   3                          UART0Tx();
+ 204   3                      RFST = SIDLE; /* Return to Idle state to continue */
+ 205   3                      break;
+ 206   3      
+ 207   3                  default:
+ 208   3                      /* Push both buttons at the same time to leave a locked unknown current state without a re
+             -set */
+ 209   3                      if((PinSwitchMaster == 0) && (PinSwitchSlave == 0))
+ 210   3                      {
+ 211   4                          /* Print Radio State Info */
+ 212   4                          UARTTxMessageBuild('S');
+ 213   4                          UARTTxMessageBuild('t');
+ 214   4                          UARTTxMessageBuild('M');
+ 215   4                          UARTTxMessageBuild(' ');
+ 216   4                          UARTTxMessageBuild('=');
+ 217   4                          UARTTxMessageBuild(' ');
+ 218   4                          UART0Tx();
+ 219   4      
+ 220   4                          UtilU8ToHumanHex(MARCSTATECurrent);
+ 221   4      
+ 222   4                          UARTTxMessageBuild('\r');
+ 223   4                          UARTTxMessageBuild('\n');
+ 224   4                          UART0Tx();
+ 225   4                          RFST = SIDLE; /* Return to Idle state to continue */
+ 226   4                      }
+ 227   3                      break;
+ 228   3              }
+ 229   2      
+ 230   2              MARCSTATEPrevious = MARCSTATECurrent;
+ 231   2          }
+ 232   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    527    ----
+C51 COMPILER V9.52.0.0   ZTSUNAMI                                                          07/12/2014 11:48:33 PAGE 5   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

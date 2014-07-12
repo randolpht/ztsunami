@@ -1,0 +1,103 @@
+C51 COMPILER V9.52.0.0   UTIL                                                              07/11/2014 18:49:06 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UTIL
+OBJECT MODULE PLACED IN Util.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Util.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "Util.h"
+   2          #include "UART.h"
+   3          #include "Types.h"
+   4          
+   5          
+   6          
+   7          /*******************************************************************************
+   8          UtilU8ToHumanHex
+   9          
+  10           *******************************************************************************/
+  11          void UtilU8ToHumanHex(unsigned char U8in)
+  12          {
+  13   1          unsigned char LowerHalfByte = 0;
+  14   1          unsigned char UpperHalfByte = 0;
+  15   1      
+  16   1          UARTTxMessageBuild('0');
+  17   1          UARTTxMessageBuild('x');
+  18   1      
+  19   1          UpperHalfByte = (U8in >> 4) & 0x0F;
+  20   1          if(UpperHalfByte < 10)
+  21   1          {
+  22   2              UARTTxMessageBuild(UpperHalfByte + ASCII_0);
+  23   2          }
+  24   1          else
+  25   1          {
+  26   2              UARTTxMessageBuild(UpperHalfByte - 10 + ASCII_A);
+  27   2          }
+  28   1      
+  29   1          LowerHalfByte = U8in & 0x0F;
+  30   1          if(LowerHalfByte < 10)
+  31   1          {
+  32   2              UARTTxMessageBuild(LowerHalfByte + ASCII_0);
+  33   2          }
+  34   1          else
+  35   1          {
+  36   2              UARTTxMessageBuild(LowerHalfByte - 10 + ASCII_A);
+  37   2          }
+  38   1      
+  39   1          UARTTxMessageBuild(' ');
+  40   1          UART0Tx();
+  41   1      }
+  42          
+  43          
+  44          
+  45          /*******************************************************************************
+  46          UtilU8ToHumanDec
+  47          
+  48           *******************************************************************************/
+  49          void UtilU8ToHumanDec(unsigned char U8in) //TODO bit to zero fill or not
+  50          {
+  51   1          unsigned char Temp = 0;
+  52   1      
+  53   1          Temp = U8in;
+  54   1          if((Temp / 100) > 0)
+  55   1          {
+C51 COMPILER V9.52.0.0   UTIL                                                              07/11/2014 18:49:06 PAGE 2   
+
+  56   2              UARTTxMessageBuild((Temp / 100) + ASCII_0);
+  57   2              Temp = Temp - ((Temp / 100) * 100);
+  58   2          }
+  59   1          else
+  60   1          {
+  61   2              UARTTxMessageBuild('0');
+  62   2          }
+  63   1      
+  64   1          if((Temp / 10) > 0)
+  65   1          {
+  66   2              UARTTxMessageBuild((Temp / 10) + ASCII_0);
+  67   2              Temp = Temp - ((Temp / 10) * 10);
+  68   2          }
+  69   1          else
+  70   1          {
+  71   2              UARTTxMessageBuild('0');
+  72   2          }
+  73   1      
+  74   1          UARTTxMessageBuild(Temp + ASCII_0);
+  75   1          UART0Tx();
+  76   1      }
+  77          
+  78          //TODO HumanHexToU8
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    174    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

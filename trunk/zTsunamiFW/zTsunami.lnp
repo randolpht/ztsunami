@@ -1,0 +1,7 @@
+"zTsunami.obj",
+"Info.obj",
+"Radio.obj",
+"UART.obj",
+"Util.obj" 
+TO "zTsunami" 
+RAMSIZE(255) 
