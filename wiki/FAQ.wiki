@@ -21,6 +21,9 @@ Q: Didn't you violate TI and/or Z-Wave alliance trust?
 A: I do not have access the official spec, which cost thousands of £/$. 
 I do not know anybody who has, I just researched on the Internet, and bought Dr. Christian Paetz book "Z-Wave Basics" ISBN 9781490537368
 
+
+<img src="http://ztsunami.googlecode.com/svn/wiki/images/Z-Wave_Basics.jpg" alt="ZWB"/>
+
 I also did not sign any NDA.
 
 ------------------
