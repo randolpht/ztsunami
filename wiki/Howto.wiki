@@ -29,3 +29,5 @@ Yellow is DevKit Tx, PC Rx
 
 
 Attach the wires to a serial port, or scope them with a logic analyser, like the Salaea tool.
+
+Launch a serial terminal (Teraterm for example) set bitrate to 115200
