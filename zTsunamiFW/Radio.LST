@@ -1,0 +1,219 @@
+C51 COMPILER V9.52.0.0   RADIO                                                             07/11/2014 23:28:50 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE RADIO
+OBJECT MODULE PLACED IN Radio.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Radio.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include  "CC1110.h"            /* Provided by Keil */
+   2          #include  "CC1110Supplement.h"
+   3          #include "Types.h"
+   4          #include "Radio.h"
+   5          
+   6          
+   7          unsigned char idata RadioRxBytes[RADIO_RX_BYTES_MAX];
+   8          unsigned char idata RadioRxBytesCount = 0;
+   9          
+  10          unsigned char idata RadioTxBytes[RADIO_TX_BYTES_MAX];
+  11          unsigned char idata RadioTxBytesCountIn = 0;
+  12          unsigned char idata RadioTxBytesCountOut = 0;
+  13          
+  14          unsigned char idata MARCSTATEPrevious = 0xFF; /* Invalid on purpose so first valid will be displayed */
+  15          unsigned char idata MARCSTATECurrent = 0xFE; /* Invalid on purpose so first valid will be displayed */
+  16          
+  17          
+  18          
+  19          /*******************************************************************************
+  20          RadioInit
+  21          
+  22          ZForce calculated values
+  23          The values we have used are as listed below
+  24          Note that PKTLEN (packet length) is variable in Z-Wave protocol
+  25          and marked as 0 in the list below.
+  26          This gets changed throughout the program depending on the state the receiver/transmitter is in.
+  27          If you just want to see if you capture something,
+  28          you should change it to some other value - maybe 10-20 - and start from there.
+  29          These are the values for EU 40 kbps frequency:
+  30          
+  31          If a byte is received in the RFD register,
+  32          and it is not read before the next byte is received,
+  33          the radio will enter RX_OVERFLOW state and the RFIF.IRQ_RXOVF flag will be set together with RFIF.IRQ_DONE
+             -.
+  34          
+  35           *******************************************************************************/
+  36          void RadioInit(void)
+  37          {
+  38   1          AGCCTRL2  = 0x43; // 0xDF17: AGCCTRL2 – AGC Control (0100 0011)
+  39   1                            // 7:6 MAX_DVGA_GAIN[1:0]  01 The highest gain setting can not be used
+  40   1                            // 5:3 MAX_LNA_GAIN[2:0]  000 Maximum possible LNA + LNA 2 gain
+  41   1                            // 2:0 MAGN_TARGET[2:0]   011 These bits set the target value for the averaged ampli
+             -tude from the digital channel filter (1 LSB = 0 dB). (33 dB)
+  42   1      
+  43   1          DEVIATN   = 0x35; // 0xDF11: DEVIATN – Modem Deviation Setting (0011 0101)
+  44   1                            //   7 Not used
+  45   1                            // 6:4 DEVIATION_E[2:0] 011 Deviation exponent
+  46   1                            //   3 Not used
+  47   1                            // 2:0 DEVIATION_M[2:0] 101 Sets fraction of symbol period used for phase change.
+  48   1      
+  49   1          FOCCFG    = 0x16; // 0xDF15: FOCCFG – Frequency Offset Compensation Configuration (0001 0110)
+  50   1                            //   7 Not used
+  51   1                            //   6 Reserved. Always write 0
+  52   1                            //   5 FOC_BS_CS_GATE  0 If set, the demodulator freezes the frequency offset compen
+             -sation and clock recovery feedback loops until the CARRIER_SENSE signal goes high
+C51 COMPILER V9.52.0.0   RADIO                                                             07/11/2014 23:28:50 PAGE 2   
+
+  53   1                            // 4:3 FOC_PRE_K[1:0] 10 The frequency compensation loop gain to be used before a sy
+             -nc word is detected. (3K)
+  54   1                            //   2 FOC_POST_K      1 The frequency compensation loop gain to be used after a syn
+             -c word is detected. (K/2)
+  55   1                            // 1:0 FOC_LIMIT[1:0] 10 The saturation point for the frequency offset compensation 
+             -algorithm (±BW CHAN / 4)
+  56   1      
+  57   1          FREQ0     = 0x66; // 0xDF0B: FREQ0 – Frequency Control Word, Low Byte
+  58   1      
+  59   1          FREQ1     = 0x66; // 0xDF0A: FREQ1 – Frequency Control Word, Middle Byte
+  60   1      
+  61   1          FREQ2     = 0x21; // 0xDF09: FREQ2 – Frequency Control Word, High Byte (0010 0001)
+  62   1                            // 7:6 FREQ[23:22] FREQ[23:22]
+  63   1                            // 5:0 FREQ[21:16] FREQ[23:0] is the base frequency for the frequency synthesizer in
+             - increments of fRef /216.
+  64   1      
+  65   1          FSCAL0    = 0x1F; // 0xDF1F: FSCAL0 – Frequency Synthesizer Calibration (0001 1111)
+  66   1                            //   7 Not used
+  67   1                            // 6:0 FSCAL0[6:0] 0011111 Frequency synthesizer calibration control. The value to u
+             -se in this register is given by the SmartRF® Studio software
+  68   1      
+  69   1          FSCAL1    = 0x00; // 0xDF1E: FSCAL1 – Frequency Synthesizer Calibration
+  70   1                            // 7:6 Not used
+  71   1                            // 5:0 FSCAL1[5:0] Frequency synthesizer calibration result register.
+  72   1      
+  73   1          FSCAL2    = 0x2A; // 0xDF1D: FSCAL2 – Frequency Synthesizer Calibration (0010 1010)
+  74   1                            // 7:6 Not used
+  75   1                            //   5 VCO_CORE_H_EN     1 Select VCO (high)
+  76   1                            // 4:0 FSCAL2[4:0]   01010 Frequency synthesizer calibration result register
+  77   1      
+  78   1          FSCAL3    = 0xE9; // 0xDF1C: FSCAL3 – Frequency Synthesizer Calibration (1110 1001)
+  79   1                            // 7:6 FSCAL3[7:6]            11 Frequency synthesizer calibration configuration. Th
+             -e value to write in this register before calibration is given by the SmartRF® Studio software
+  80   1                            // 5:4 CHP_CURR_CAL_EN[1:0]   10 Disable charge pump calibration stage when 0
+  81   1                            // 3:0 FSCAL3[3:0]          1001 Frequency synthesizer calibration result register
+  82   1      
+  83   1          FSCTRL1   = 0x06; // 0xDF07: FSCTRL1 – Frequency Synthesizer Control (0000 0110)
+  84   1                            // 7:6 Not used
+  85   1                            //   5 Reserved
+  86   1                            // 4:0 FREQ_IF[4:0] 0110 The desired IF frequency to employ in RX. Subtracted from F
+             -S base frequency in RX and controls the digital complex mixer in the demodulator.
+  87   1      
+  88   1          LQI       = 0x7F; // 0xDF39: LQI – Demodulator Estimate for Link Quality (0111 1111)
+  89   1                            //   7 CRC_OK             0
+  90   1                            // 6:0 LQI_EST[6:0] 1111111 The Link Quality Indicator estimates how easily a receiv
+             -ed signal can be demodulated. Calculated over the 64 symbols following the sync word.
+  91   1      
+  92   1          MCSM0     = 0x18; // 0xDF14: MCSM0 – Main Radio Control State Machine Configuration (0001 1000)
+  93   1                            // 7:6 Not used
+  94   1                            // 5:4 FS_AUTOCAL[1:0]   01 Select calibration mode, when to calibrate (When going f
+             -rom IDLE to RX or TX (or FSTXON))
+  95   1                            //   3 Reserved.          1 Refer to SmartRF® Studio software [9] for settings
+  96   1                            //   2 Reserved.          0 Refer to SmartRF® Studio software [9] for settings
+  97   1                            // 1:0 CLOSE_IN_RX[1:0] 0 Sets RX attenuation. Used in order to avoid saturation in 
+             -RX when two or more chips are close (within ~3 m). (0dB)
+  98   1      
+  99   1          MDMCFG1   = 0x72; // 0xDF0F: MDMCFG1 – Modem Configuration (0111 0010)
+ 100   1                            //   7 FEC_EN              0 Enable Forward Error Correction (FEC) with interleaving
+             - for packet payload. FEC is only supported for fixed packet length mode, i.e. PKTCTRL0.LENGTH_CONFIG=0
+ 101   1                            // 6:4 NUM_PREAMBLE[2:0] 111 Sets the minimum number of preamble bytes to be transmi
+             -tted (24)
+ 102   1                            // 3:2 Not used
+C51 COMPILER V9.52.0.0   RADIO                                                             07/11/2014 23:28:50 PAGE 3   
+
+ 103   1                            // 1:0 CHANSPC_E[1:0]     10 2 bit exponent of channel spacing
+ 104   1      
+ 105   1          MDMCFG2   = 0x06; // 0xDF0E: MDMCFG2 – Modem Configuration (0000 0110)
+ 106   1                            //   7 DEM_DCFILT_OFF    0 Disable digital DC blocking filter before demodulator. (E
+             -nabled)
+ 107   1                            // 6:4 MOD_FORMAT[2:0] 000 The modulation format of the radio signal (2-FSK)
+ 108   1                            //   3 MANCHESTER_EN     0 Manchester encoding/decoding enable (Disable)
+ 109   1                            // 2:0 SYNC_MODE[2:0]  110 Sync-word qualifier mode. (16/16 + carrier-sense above th
+             -reshold)
+ 110   1      
+ 111   1          MDMCFG3   = 0x93; // 0xDF0D: MDMCFG3 – Modem Configuration: The mantissa of the user specified symbo
+             -l rate.
+ 112   1      
+ 113   1          MDMCFG4   = 0xCA; // 0xDF0C: MDMCFG4 – Modem configuration (1100 1010)
+ 114   1                            // 7:6 CHANBW_E[1:0]
+ 115   1                            // 5:4 CHANBW_M[1:0] Sets the decimation ratio for the delta-sigma ADC input stream 
+             -and thus the channel bandwidth.
+ 116   1                            // 3:0 DRATE_E[3:0] The exponent of the user specified symbol rate.
+ 117   1      
+ 118   1          PA_TABLE0 = 0x50; // 0xDF2E: PA_TABLE0 – PA Power Setting 0: Power amplifier output power setting 0
+ 119   1      
+ 120   1          PKTCTRL0  = 0x00; // 0xDF04: PKTCTRL0 – Packet Automation Control (0000 0000)
+ 121   1                            //   7 Not used            0
+ 122   1                            //   6 WHITE_DATA          0 Whitening enable. (Disabled)
+ 123   1                            // 5:4 PKT_FORMAT[1:0]    00 Packet format of RX and TX data (Normal mode)
+ 124   1                            //   3 CC2400_EN           0 CC2400 support enable. (Disabled)
+ 125   1                            //   2 CRC_EN              0 CRC calculation in TX and CRC check in RX enable (Disab
+             -led)
+ 126   1                            // 1:0 LENGTH_CONFIG[1:0] 00 Packet Length Configuration (Fixed packet length mode. 
+             -Length configured in PKTLEN register)
+ 127   1      
+ 128   1          PKTCTRL1  = 0x00; // 0xDF03: PKTCTRL1 – Packet Automation Control
+ 129   1                            // 7:5 PQT[2:0]    000 Preamble quality estimator threshold.
+ 130   1                            // 4:3 Not used     00
+ 131   1                            //   2 APPEND_STATUS 0 When enabled, two status bytes will be appended to the payloa
+             -d of the packet. The status bytes contain RSSI and LQI values, as well as the CRC OK flag
+ 132   1                            // 1:0 ADR_CHK[1:0] 00 Controls address check configuration of received packages. (N
+             -o address check)
+ 133   1      
+ 134   1          PKTLEN    = 0x14; // 0xDF02: PKTLEN – Packet Length: Indicates the packet length when fixed length p
+             -ackets are enabled. If variable length packets are used, this value indicates the maximum length packets allowed
+ 135   1      
+ 136   1          SYNC0     = 0x0F; // 0xDF01: SYNC0 – Sync Word, Low Byte:  8 LSB of 16-bit sync word
+ 137   1          SYNC1     = 0xAA; // 0xDF00: SYNC1 – Sync Word, High Byte: 8 MSB of 16-bit sync word
+ 138   1      
+ 139   1          TEST0     = 0x09; // 0xDF25: TEST0 – Various Test Settings (0000 1001)
+ 140   1                            // 7:2 TEST0[7:2]     000010 The value to use in this register is given by the Smart
+             -RF® Studio software [9].
+ 141   1                            //   1 VCO_SEL_CAL_EN      0 Enable VCO selection calibration stage when 1 (Disabled
+             -)
+ 142   1                            //   0 TEST0[0]            1 The value to use in this register is given by the Smart
+             -RF® Studio software [9].
+ 143   1      
+ 144   1          TEST1     = 0x35; // 0xDF24: TEST1 – Various Test Settings
+ 145   1                            // Always set this register to 0x31 when being in TX. At low data rates, the sensiti
+             -vity can be improved by changing it to 0x35 in RX.
+ 146   1      
+ 147   1          TEST2     = 0x81; // 0xDF23: TEST2 – Various Test Settings
+ 148   1                            // At low data rates, the sensitivity can be improved by changing it to 0x35
+ 149   1      }
+ 150          
+ 151          
+C51 COMPILER V9.52.0.0   RADIO                                                             07/11/2014 23:28:50 PAGE 4   
+
+ 152          
+ 153          
+ 154          /*******************************************************************************
+ 155          RadioTxMessageBuild
+ 156          
+ 157           *******************************************************************************/
+ 158          void RadioTxMessageBuild(unsigned char CharIn)
+ 159          {
+ 160   1          RadioTxBytes[RadioTxBytesCountIn] = CharIn;
+ 161   1          RadioTxBytesCountIn++;
+ 162   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    163    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =     85    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

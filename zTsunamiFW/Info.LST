@@ -1,0 +1,120 @@
+C51 COMPILER V9.52.0.0   INFO                                                              07/12/2014 11:38:19 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE INFO
+OBJECT MODULE PLACED IN Info.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Info.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "UART.h"
+   2          #include "Info.h"
+   3          
+   4          
+   5          
+   6          /*******************************************************************************
+   7          InfoBanner
+   8          
+   9          Displays program name and version to UART0
+  10           *******************************************************************************/
+  11          void InfoBanner(void)
+  12          {
+  13   1          /* Clear the Terminal */
+  14   1          UARTTxMessageBuild(27);
+  15   1          UARTTxMessageBuild('[');
+  16   1          UARTTxMessageBuild('2');
+  17   1          UARTTxMessageBuild('J');
+  18   1          UARTTxMessageBuild(27);
+  19   1          UARTTxMessageBuild('[');
+  20   1          UARTTxMessageBuild('H');
+  21   1          UART0Tx();
+  22   1      
+  23   1          /* Program Name and Version */
+  24   1          UARTTxMessageBuild('z');
+  25   1          UARTTxMessageBuild('T');
+  26   1          UARTTxMessageBuild('s');
+  27   1          UARTTxMessageBuild('u');
+  28   1          UARTTxMessageBuild('n');
+  29   1          UARTTxMessageBuild('a');
+  30   1          UARTTxMessageBuild('m');
+  31   1          UARTTxMessageBuild('i');
+  32   1          UARTTxMessageBuild(' ');
+  33   1          UARTTxMessageBuild('v');
+  34   1          UARTTxMessageBuild(VERSION_MAJOR);
+  35   1          UARTTxMessageBuild('.');
+  36   1          UARTTxMessageBuild(VERSION_MINOR);
+  37   1          UARTTxMessageBuild('\r');
+  38   1          UARTTxMessageBuild('\n');
+  39   1          UART0Tx();
+  40   1      
+  41   1          /* Creator */
+  42   1          UARTTxMessageBuild('J');
+  43   1          UARTTxMessageBuild('e');
+  44   1          UARTTxMessageBuild('a');
+  45   1          UARTTxMessageBuild('n');
+  46   1          UARTTxMessageBuild('-');
+  47   1          UARTTxMessageBuild('L');
+  48   1          UARTTxMessageBuild('o');
+  49   1          UARTTxMessageBuild('u');
+  50   1          UARTTxMessageBuild('i');
+  51   1          UARTTxMessageBuild('s');
+  52   1          UARTTxMessageBuild(' ');
+  53   1          UARTTxMessageBuild('B');
+  54   1          UARTTxMessageBuild('o');
+  55   1          UARTTxMessageBuild('u');
+C51 COMPILER V9.52.0.0   INFO                                                              07/12/2014 11:38:19 PAGE 2   
+
+  56   1          UARTTxMessageBuild('r');
+  57   1          UARTTxMessageBuild('d');
+  58   1          UARTTxMessageBuild('o');
+  59   1          UARTTxMessageBuild('n');
+  60   1          UARTTxMessageBuild('\r');
+  61   1          UARTTxMessageBuild('\n');
+  62   1          UART0Tx();
+  63   1      
+  64   1          /* Contact Details */
+  65   1          UARTTxMessageBuild('j');
+  66   1          UARTTxMessageBuild('n');
+  67   1          UARTTxMessageBuild('l');
+  68   1          UARTTxMessageBuild('s');
+  69   1          UARTTxMessageBuild('.');
+  70   1          UARTTxMessageBuild('b');
+  71   1          UARTTxMessageBuild('o');
+  72   1          UARTTxMessageBuild('u');
+  73   1          UARTTxMessageBuild('r');
+  74   1          UARTTxMessageBuild('d');
+  75   1          UARTTxMessageBuild('o');
+  76   1          UARTTxMessageBuild('n');
+  77   1          UARTTxMessageBuild('@');
+  78   1          UARTTxMessageBuild('g');
+  79   1          UARTTxMessageBuild('o');
+  80   1          UARTTxMessageBuild('o');
+  81   1          UARTTxMessageBuild('g');
+  82   1          UARTTxMessageBuild('l');
+  83   1          UARTTxMessageBuild('e');
+  84   1          UARTTxMessageBuild('m');
+  85   1          UARTTxMessageBuild('a');
+  86   1          UARTTxMessageBuild('i');
+  87   1          UARTTxMessageBuild('l');
+  88   1          UARTTxMessageBuild('.');
+  89   1          UARTTxMessageBuild('c');
+  90   1          UARTTxMessageBuild('o');
+  91   1          UARTTxMessageBuild('m');
+  92   1          UARTTxMessageBuild('\r');
+  93   1          UARTTxMessageBuild('\n');
+  94   1          UART0Tx();
+  95   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    367    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
