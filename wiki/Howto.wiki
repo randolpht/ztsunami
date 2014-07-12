@@ -23,7 +23,18 @@ I know, I made this mistake at first, and had to return it.
 
 Flash the firmware (Source Tab, Browse, Trunk/ztsunamiFW/zTsunami.hex) to the chip using the provided USB flasher tool and "TI SmartRF Flash Programmer Software"
 
+
 <img src="http://ztsunami.googlecode.com/svn/wiki/images/GetFirmware.png" alt="GFw"/>
+
+
+
+<img src="http://ztsunami.googlecode.com/svn/wiki/images/Cabling.jpg" alt="Cbl"/>
+
+1 Orientation of the flashing cable
+
+2 jumper config for battery power
+
+
 
 <img src="http://ztsunami.googlecode.com/svn/wiki/images/Flashing.png" alt="Fls"/>
 
