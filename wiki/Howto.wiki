@@ -31,14 +31,17 @@ Flash the firmware (Source Tab, Browse, Trunk/ztsunamiFW/zTsunami.hex) to the ch
 
 Solder 3 wires as such:
 
-Black is Ground
+Black is Ground (GND)
 
-Blue is   Devkit Rx, PC Tx
+Blue is   Devkit Rx, PC Tx (P0_2)
 
-Yellow is DevKit Tx, PC Rx
+Yellow is Devkit Tx, PC Rx (P0_3)
 
 
-Attach the wires to a serial port, or scope them with a logic analyser, like the Saleae ( https://www.saleae.com/ ) tool.
+<img src="http://ztsunami.googlecode.com/svn/wiki/images/BoardWires.jpg" alt="BoW"/>
+
+
+Attach the wires to a serial port (like an FTDI USB to serial cable), or scope them with a logic analyser, like the Saleae ( https://www.saleae.com/ ) tool.
 
 Launch a serial terminal (Tera Term ( http://ttssh2.sourceforge.jp/index.html.en ) for example)
 
