@@ -1,0 +1,31 @@
+What you need:
+
+TEXAS INSTRUMENTS - CC1110DK-MINI-868 - CC1110, WIRELESS, MINI DEV KIT
+
+Costs around £55, but you could split it in 2 and sell the second part
+
+
+DO NOT GET THE FOLLOWING:
+
+TEXAS INSTRUMENTS - CC1110EMK868-915 - CC1110 RF TRANSCEIVER, EVAL MODULE
+
+It might, but it will be very difficult to work with.
+I know, I made this mistake at first, and had to return it.
+
+
+--------------------------------
+
+Flash the firmware (.hex) to the chip using the provided flasher tool
+
+--------------------------------
+
+Solder 3 wires as such:
+
+Black is Ground
+
+Blue is   Devkit Rx, PC tx
+
+Yellow is DevKit Tx, PC Rx
+
+
+Attach the wires to a serial port, or scope them with a logic analyser, like the Salaea tool.
