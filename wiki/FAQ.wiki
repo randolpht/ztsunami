@@ -58,7 +58,7 @@ You can also give me a donation through paypal if you like it.
 
 --------------------------
 
-Q: Can I use use it in a commercial project.
+Q: Can I use use it in a commercial project?
 
 A: YES, For free! but you MUST link to this project web-page in the user manual, or provide a document that point to it with the product.
 
@@ -72,4 +72,4 @@ A: YES. I'll be glad to know of any project that uses it.
 
 Q: Will you build me one?
 
-A: I could, but honestly, if you can't solder 3 wires, and flash a firmware following instructions, you will not get the best of this project. 
+A: I could, but honestly, if you can't solder 3 wires, and flash a firmware following instructions, you will not get the best of this project. If I do, there will be a cost for my time.
