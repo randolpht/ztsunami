@@ -69,6 +69,9 @@ As of v0.1 the firmware is being developed using Keil C51 v9.5.2
 
 With the demo license it is limited to 2KB of code.
 
+v0.1 uses: "Program Size: data=180.2 xdata=0 code=1521"
+
+
 So it is likely the toolchain change to SDCC ( http://sdcc.sourceforge.net/ ) in the future.
 
 You don't need these tools if you plan to use the unmodified ztsunami default firmware: just flash the .hex file provided
