@@ -34,7 +34,7 @@ http://research.sensepost.com/tools/embedded/zforce
 
 https://code.google.com/p/z-force/
 
-A: YES! I created zTsunami as I love Z-Wave, but kept being frustrated by the controllers. I have a Micasaverde, a Fibaro HC2, and a razberry. A colleague of mine (not z-wave related work) has a USB zwave controller too, and frankly they all suck. So I started sniffing the razberry. but I found it had too many undocumented proprietary packets. then I found z-force, and thought I could use it as a controller. But after I received the devkit, I found out, there were too many issues: Source was not available, and the firmware binaries were not compatible with the flashing tool I had. So I decided to write my own.
+A: YES! I created zTsunami as I love Z-Wave, but kept being frustrated by the controllers. I have a Micasaverde, a Fibaro HC2, and a razberry. A colleague of mine (not z-wave related work) has a USB zwave controller too, and frankly they all suck (at least, they don't work the way i want). So I started sniffing the razberry. but I found it had too many undocumented proprietary packets. then I found z-force, and thought I could use it as a controller. But after I received the devkit, I found out, there were too many issues: Source was not available, and the firmware binaries were not compatible with the flashing tool I had. So I decided to write my own.
 
 --------------------
 
