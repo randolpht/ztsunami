@@ -28,6 +28,20 @@ Blue is   Devkit Rx, PC tx
 Yellow is DevKit Tx, PC Rx
 
 
-Attach the wires to a serial port, or scope them with a logic analyser, like the Salaea tool.
+Attach the wires to a serial port, or scope them with a logic analyser, like the Saleae (https://www.saleae.com/) tool.
 
-Launch a serial terminal (Teraterm for example) set bitrate to 115200
+Launch a serial terminal (Tera Term ( http://ttssh2.sourceforge.jp/index.html.en ) for example)
+
+Select correct port, Set bitrate to 115200
+
+
+----------------------------------
+
+As of v0.1 the firmware is being developed using Keil C51 v9.5.2
+( http://www.keil.com/c51/c51.asp )
+
+With the demo license it is limited to 2KB of code.
+
+So it is likely the toolchain change to SDCC ( http://sdcc.sourceforge.net/ ) in the future.
+
+You don't need these tools if you plan to use the unmodified ztsunami default firmware: just flash the .hex file provided
