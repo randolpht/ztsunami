@@ -73,3 +73,11 @@ A: YES. I'll be glad to know of any project that uses it.
 Q: Will you build me one?
 
 A: I could, but honestly, if you can't solder 3 wires, and flash a firmware following instructions, you will not get the best of this project. If I do, there will be a cost for my time.
+
+
+-------------------
+
+Q: I don't like your coding style. I prefer the curly brackets on the same line.
+
+A: Get the source, and fix it in your own branch with a perl script.
+That's the style I have to use at work, and it works well enough for me for most my hobby project. I don't use an IDE, I use notepad++, but I also like the collapsing feature of VisualStudio.
